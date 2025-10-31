@@ -1,41 +1,42 @@
-Produk App - Java + Firebase Firestore + Base64 Image
+# 📦 Produk App - Java + Firebase Firestore + Base64 Image
 
-Aplikasi Android sederhana untuk mengelola data produk (Create, Read, Update, Delete) menggunakan Firebase Firestore. Tidak menggunakan Firebase Storage, gambar produk disimpan dalam format Base64 string langsung ke Firestore (cocok untuk akun Firebase gratis / Spark plan).
+Aplikasi Android sederhana untuk mengelola data produk (Create, Read, Update, Delete - **CRUD**) menggunakan **Firebase Firestore**. 
+Aplikasi ini dirancang tanpa menggunakan Firebase Storage; gambar produk disimpan dalam format **Base64 string** langsung ke Firestore (cocok untuk akun Firebase gratis / **Spark plan**).
 
-FITUR UTAMA
+---
 
-Tambah Produk
+## ✨ FITUR UTAMA
 
-• Input nama produk, harga, nomor urut, dan pilih gambar dari galeri.
+### **Tambah Produk**
 
-• Gambar otomatis dikonversi ke Base64 sebelum disimpan ke Firestore.
+* Input nama produk, harga, nomor urut, dan pilih gambar dari galeri.
+* Gambar otomatis dikonversi ke **Base64** sebelum disimpan ke Firestore.
 
-Tampil Daftar Produk
+### **Tampil Daftar Produk**
 
-• Data produk dimuat dari koleksi Firestore Produk.
+* Data produk dimuat dari koleksi Firestore `Produk`.
+* Semua *field* (namaProduk, harga, noProduk, fotoBase64) ditampilkan di **RecyclerView**.
 
-• Semua field (namaProduk, harga, noProduk, fotoBase64) ditampilkan di RecyclerView.
+### **Edit Produk**
 
-Edit Produk
+* Ubah data produk dan gambar (**Base64** akan diperbarui).
+* Data lama otomatis ter-*replace* di Firestore.
 
-• Ubah data produk dan gambar (Base64 akan diperbarui).
+### **Hapus Produk**
 
-• Data lama otomatis ter-replace di Firestore.
+* Menghapus dokumen dari Firestore berdasarkan ID produk.
+* Tidak perlu hapus file di Storage karena gambar disimpan sebagai **Base64**.
 
-Hapus Produk
+### **Otomatis Refresh**
 
-• Menghapus dokumen dari Firestore berdasarkan ID produk.
+* Setelah menambah, mengedit, atau menghapus produk, **MainActivity** otomatis memuat ulang data tanpa harus menutup aplikasi.
 
-• Tidak perlu hapus file di Storage karena gambar disimpan sebagai Base64.
+---
 
-Otomatis Refresh
+## 💻 Teknologi Yang Digunakan
 
-• Setelah menambah, mengedit, atau menghapus produk, MainActivity otomatis memuat ulang data tanpa harus menutup aplikasi.
-
-Teknologi Yang Digunakan :
-
-Bahasa Pemrograman : HTML
-
-Database : Firebase
-
-Penyimpanan Gambar : Base64 Encoding
+| Kategori | Detail |
+| :--- | :--- |
+| **Bahasa Pemrograman** | HTML |
+| **Database** | Firebase |
+| **Penyimpanan Gambar** | Base64 Encoding |
