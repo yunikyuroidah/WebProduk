@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tambah Produk</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="card">
+    <h2>Tambah Produk</h2>
+    <form id="produkForm">
+      <label>No Produk:</label><br>
+      <input type="text" id="noProduk" required><br><br>
+
+      <label>Nama Produk:</label><br>
+      <input type="text" id="namaProduk" required><br><br>
+
+      <label>Harga (Rp):</label><br>
+      <input type="text" id="harga" required><br><br>
+
+      <label>Foto Produk:</label><br>
+      <input type="file" id="foto" accept="image/*" required><br><br>
+
+      <button type="submit">Simpan</button>
+    </form>
+
+    <p id="status"></p>
+    <div style="text-align:center; margin-top:10px;">
+      <a href="tampil.html"><button type="button" class="secondary">Kembali ke Data Produk</button></a>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+    // 🔥 Konfigurasi Firebase
+    const firebaseConfig = {
+  apiKey: "AIzaSyD9wv5E4J5VoHxfg2PXy-_BY4mDef463rk",
+  authDomain: "crudprodukapp-296e3.firebaseapp.com",
+  databaseURL: "https://crudprodukapp-296e3-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "crudprodukapp-296e3",
+  storageBucket: "crudprodukapp-296e3.firebasestorage.app",
+  messagingSenderId: "776005308981",
+  appId: "1:776005308981:web:4cc5f9d9187bc8ffdf977c",
+  measurementId: "G-RF84HRZ059"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const form = document.getElementById("produkForm");
+    const statusText = document.getElementById("status");
+
+    // Fungsi ubah gambar ke Base64
+    function convertToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result); // hasil sudah mengandung prefix
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // Simpan data ke Firestore
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const noProduk = document.getElementById("noProduk").value.trim();
+      const namaProduk = document.getElementById("namaProduk").value.trim();
+      const harga = document.getElementById("harga").value.trim();
+      const fotoFile = document.getElementById("foto").files[0];
+
+      if (!noProduk || !namaProduk || !harga || !fotoFile) {
+        statusText.innerText = "⚠️ Harap isi semua field!";
+        statusText.style.color = "red";
+        return;
+      }
+
+      try {
+        const fotoBase64 = await convertToBase64(fotoFile);
+
+        await addDoc(collection(db, "produk"), {
+          noProduk,
+          namaProduk,
+          harga,
+          fotoBase64
+        });
+
+        statusText.innerText = "✅ Produk berhasil disimpan!";
+        statusText.style.color = "green";
+        form.reset();
+      } catch (err) {
+        console.error(err);
+        statusText.innerText = "❌ Gagal menyimpan: " + err.message;
+        statusText.style.color = "red";
+      }
+    });
+  </script>
+</body>
+</html>

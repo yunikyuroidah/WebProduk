@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Produk</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .produk-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+    .produk-card {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 15px;
+      width: 220px;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .produk-card img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+    button {
+      margin: 5px;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      color: white;
+    }
+    .edit-btn { background-color: #007bff; }
+    .hapus-btn { background-color: #dc3545; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Data Produk</h2>
+
+    <div style="text-align:center; margin-bottom:20px;">
+      <a href="index.html"><button class="primary">➕ Tambah Produk</button></a>
+    </div>
+
+    <div id="produkList" class="produk-container"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+    // 🔥 Konfigurasi Firebase
+    const firebaseConfig = {
+  apiKey: "AIzaSyD9wv5E4J5VoHxfg2PXy-_BY4mDef463rk",
+  authDomain: "crudprodukapp-296e3.firebaseapp.com",
+  databaseURL: "https://crudprodukapp-296e3-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "crudprodukapp-296e3",
+  storageBucket: "crudprodukapp-296e3.firebasestorage.app",
+  messagingSenderId: "776005308981",
+  appId: "1:776005308981:web:4cc5f9d9187bc8ffdf977c"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const produkList = document.getElementById("produkList");
+
+    // 🔹 Menampilkan Produk
+    async function loadProduk() {
+      const querySnapshot = await getDocs(collection(db, "produk"));
+      produkList.innerHTML = "";
+
+      querySnapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        const id = docSnap.id;
+
+        const imgSrc = data.fotoBase64?.startsWith("data:image")
+          ? data.fotoBase64
+          : `data:image/jpeg;base64,${data.fotoBase64}`;
+
+        const card = document.createElement("div");
+        card.className = "produk-card";
+        card.innerHTML = `
+          <img src="${imgSrc}" alt="${data.namaProduk}">
+          <h3>${data.namaProduk}</h3>
+          <p>No: ${data.noProduk}</p>
+          <p>Harga: Rp ${data.harga}</p>
+          <button class="edit-btn" data-id="${id}">✏️ Edit</button>
+          <button class="hapus-btn" data-id="${id}">🗑️ Hapus</button>
+        `;
+
+        produkList.appendChild(card);
+      });
+
+      // 🔹 Event tombol Edit
+      document.querySelectorAll(".edit-btn").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          const id = e.target.getAttribute("data-id");
+          window.location.href = `edit.html?id=${id}`;
+        });
+      });
+
+      // 🔹 Event tombol Hapus
+      document.querySelectorAll(".hapus-btn").forEach((btn) => {
+        btn.addEventListener("click", async (e) => {
+          const id = e.target.getAttribute("data-id");
+          if (confirm("Yakin ingin menghapus produk ini?")) {
+            await deleteDoc(doc(db, "produk", id));
+            alert("Produk berhasil dihapus!");
+            loadProduk();
+          }
+        });
+      });
+    }
+
+    loadProduk();
+  </script>
+</body>
+</html>

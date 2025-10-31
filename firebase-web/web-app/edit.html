@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Produk</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="card">
+    <h2>Edit Produk</h2>
+    <form id="editForm">
+      <label>No Produk:</label><br>
+      <input type="text" id="noProduk" required><br><br>
+
+      <label>Nama Produk:</label><br>
+      <input type="text" id="namaProduk" required><br><br>
+
+      <label>Harga (Rp):</label><br>
+      <input type="text" id="harga" required><br><br>
+
+      <label>Foto Produk:</label><br>
+      <input type="file" id="foto" accept="image/*"><br><br>
+
+      <img id="preview" src="" alt="Preview" style="max-width:150px; display:none; border-radius:8px;"><br><br>
+
+      <button type="submit">💾 Simpan Perubahan</button>
+      <button type="button" id="kembaliBtn" class="secondary">⬅️ Kembali</button>
+    </form>
+
+    <p id="status"></p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+    // 🔥 Konfigurasi Firebase
+    const firebaseConfig = {
+  apiKey: "AIzaSyD9wv5E4J5VoHxfg2PXy-_BY4mDef463rk",
+  authDomain: "crudprodukapp-296e3.firebaseapp.com",
+  databaseURL: "https://crudprodukapp-296e3-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "crudprodukapp-296e3",
+  storageBucket: "crudprodukapp-296e3.firebasestorage.app",
+  messagingSenderId: "776005308981",
+  appId: "1:776005308981:web:4cc5f9d9187bc8ffdf977c",
+  measurementId: "G-RF84HRZ059"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get("id");
+
+    const form = document.getElementById("editForm");
+    const statusText = document.getElementById("status");
+    const preview = document.getElementById("preview");
+    const kembaliBtn = document.getElementById("kembaliBtn");
+
+    // 🔹 Ambil data produk berdasarkan ID
+    async function loadProduk() {
+      const docRef = doc(db, "produk", id);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        document.getElementById("noProduk").value = data.noProduk;
+        document.getElementById("namaProduk").value = data.namaProduk;
+        document.getElementById("harga").value = data.harga;
+        if (data.fotoBase64) {
+          preview.src = data.fotoBase64;
+          preview.style.display = "block";
+        }
+      } else {
+        alert("Produk tidak ditemukan!");
+        window.location.href = "tampil.html";
+      }
+    }
+
+    // 🔹 Konversi gambar ke Base64
+    function convertToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // 🔹 Simpan perubahan
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const noProduk = document.getElementById("noProduk").value.trim();
+      const namaProduk = document.getElementById("namaProduk").value.trim();
+      const harga = document.getElementById("harga").value.trim();
+      const fotoFile = document.getElementById("foto").files[0];
+
+      try {
+        let fotoBase64 = preview.src; // pakai gambar lama jika tidak diganti
+        if (fotoFile) {
+          fotoBase64 = await convertToBase64(fotoFile);
+        }
+
+        await updateDoc(doc(db, "produk", id), {
+          noProduk,
+          namaProduk,
+          harga,
+          fotoBase64
+        });
+
+        statusText.innerText = "✅ Produk berhasil diperbarui!";
+        statusText.style.color = "green";
+      } catch (err) {
+        console.error(err);
+        statusText.innerText = "❌ Gagal memperbarui: " + err.message;
+        statusText.style.color = "red";
+      }
+    });
+
+    // 🔹 Tombol kembali
+    kembaliBtn.addEventListener("click", () => {
+      window.location.href = "tampil.html";
+    });
+
+    loadProduk();
+  </script>
+</body>
+</html>
