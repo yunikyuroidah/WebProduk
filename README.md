@@ -31,3 +31,11 @@ Hapus Produk
 Otomatis Refresh
 
 • Setelah menambah, mengedit, atau menghapus produk, MainActivity otomatis memuat ulang data tanpa harus menutup aplikasi.
+
+Teknologi Yang Digunakan :
+
+Bahasa Pemrograman : HTML
+
+Database : Firebase
+
+Penyimpanan Gambar : Base64 Encoding
